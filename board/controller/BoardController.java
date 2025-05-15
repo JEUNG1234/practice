@@ -58,7 +58,7 @@ public class BoardController {
         }
 
         if (!upfile.isEmpty()) {
-            File file = new File("C:\\workspace\\pra\\board\\src\\main\\resources\\uploads", upfile.getOriginalFilename());
+            File file = new File("C:\\workspace\\11_SpringBoot\\board\\src\\main\\resources\\uploads", upfile.getOriginalFilename());
             upfile.transferTo(file);
 
             request.setFile_name("/uploads/" + upfile.getOriginalFilename());
@@ -84,7 +84,7 @@ public class BoardController {
     public ResponseEntity<Long> updateBoard(BoardRequest.UpdateDTO request, MultipartFile upfile) throws IOException {
 
         if (upfile != null && !upfile.isEmpty()) {
-            File file = new File("C:\\workspace\\pra\\board\\src\\main\\resources\\uploads", upfile.getOriginalFilename());
+            File file = new File("C:\\workspace\\11_SpringBoot\\board\\src\\main\\resources\\uploads", upfile.getOriginalFilename());
             upfile.transferTo(file);
 
             request.setOrigin_file("/uploads/" + upfile.getOriginalFilename());
