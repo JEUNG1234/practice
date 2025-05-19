@@ -1,16 +1,22 @@
 package com.kh.jpa.entity;
 
+import com.kh.jpa.dto.MemberDto;
 import com.kh.jpa.enums.CommonEnums;
-import jakarta.persistence.Access;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,8 +69,32 @@ public class Member {
 
     private Integer age;
 
+    //1 : N 연관관계 주인 = Board
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    List<Board> boards = new ArrayList<>();
+
+    //1 : N 연관관계 주인 = Notice
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    List<Notice> notices = new ArrayList<>();
+
+    //회원 : 프로필 (1 : 1)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "PROFILE_ID", unique = true)
+    private Profile profile;
+
+
     public enum Gender {
         M, F
+    }
+
+    public void updateMemberInfo(String username, String email, Gender gender, String phone, String address, Integer age) {
+        this.userName = userName;
+        this.email = email;
+        this.gender = gender;
+        this.phone = phone;
+        this.address = address;
+        this.age = age;
+
     }
 
     @PrePersist

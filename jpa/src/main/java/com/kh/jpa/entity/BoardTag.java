@@ -17,63 +17,23 @@ import lombok.Setter;
 @Entity
 @Table(name = "BOARD_TAG")
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class BoardTag {
 
     @Id
-    @Column(name = "BOARD_NO")
-    private Long boardNo;
+    @Column(name = "BOARD_TAG_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long boardTagId;
 
-    @Id
-    @Column(name = "TAG_ID")
-    private Long tagId;
-
-    @ManyToOne
-    @JoinColumn(name = "BOARD_NO", insertable = false, updatable = false)
+    //게시글 : 중계테이블 (1:N)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BOARD_NO", nullable = false)
     private Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "TAG_ID", insertable = false, updatable = false)
+    //태그 : 중계테이블 (1:N)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TAG_ID", nullable = false)
     private Tag tag;
-
-    // 생성자, Getter, Setter
-    public BoardTag() {}
-
-    public BoardTag(Long boardNo, Long tagId) {
-        this.boardNo = boardNo;
-        this.tagId = tagId;
-    }
-
-    public Long getBoardNo() {
-        return boardNo;
-    }
-
-    public void setBoardNo(Long boardNo) {
-        this.boardNo = boardNo;
-    }
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public Tag getTag() {
-        return tag;
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
 }
