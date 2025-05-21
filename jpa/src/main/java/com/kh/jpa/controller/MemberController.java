@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -54,4 +55,11 @@ public class MemberController {
         memberService.deleteMember(userId);
         return ResponseEntity.ok().build();
     }
+
+    //이름으로 회원 검색
+    @GetMapping("/search/name")
+    public ResponseEntity<List<MemberDto.Response>> searchMemberByName(@RequestParam String name) {
+        return ResponseEntity.ok(memberService.findByName(name));
+    }
+
 }

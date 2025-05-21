@@ -32,4 +32,13 @@ public class MemberRepositoryImpl implements MemberRepository {
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }
+
+    @Override
+    public List<Member> findByName(String name) {
+        String query = "select m from Member m where m.userName LIKE :username"; // %지원%
+        return em.createQuery(query, Member.class)
+                .setParameter("username", "%" + name + "%")
+                .getResultList();
+
+    }
 }

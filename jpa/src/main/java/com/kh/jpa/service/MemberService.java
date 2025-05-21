@@ -9,4 +9,5 @@ public interface MemberService {
     MemberDto.Response updateMember(String userId, MemberDto.Update updateDto);
     void deleteMember(String userId);
     List<MemberDto.Response> findAllMember();
+    List<MemberDto.Response> findByName(String name);
 }

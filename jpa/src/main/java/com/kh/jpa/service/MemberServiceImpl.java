@@ -60,4 +60,11 @@ public class MemberServiceImpl implements MemberService {
                 .map(MemberDto.Response::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<MemberDto.Response> findByName(String name) {
+        return memberRepository.findByName(name).stream()
+                .map(MemberDto.Response::toDto)
+                .collect(Collectors.toList());
+    }
 }
