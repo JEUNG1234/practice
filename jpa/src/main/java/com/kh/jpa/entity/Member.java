@@ -1,113 +1,97 @@
 package com.kh.jpa.entity;
 
-import com.kh.jpa.dto.MemberDto;
 import com.kh.jpa.enums.CommonEnums;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
+@Setter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //JPA 스펙상 필수 + 외부 생성 방지
+@Table(name = "MEMBER")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@DynamicInsert// insert시에 null이 아닌 필드만 쿼리에 포함, default값 활용
-@DynamicUpdate// 변경된 필드만 update문에 포함
+@DynamicInsert
+@DynamicUpdate
 public class Member {
 
     @Id
-    @Column(name = "USER_ID", length = 30)
-    private String userId;
+    @Column(name = "USER_ID", length = 254)
+    private String userId; // email 형식 ID
 
     @Column(name = "USER_PWD", length = 100, nullable = false)
     private String userPwd;
 
-    @Column(name = "USER_NAME", length = 15, nullable = false)
+    @Column(name = "USER_NAME", length = 50, nullable = false)
     private String userName;
 
-    @Column(length = 254)
+    @Column(name = "EMAIL", length = 254, unique = true) // 실제 이메일 (userId와 같을 수 있음)
     private String email;
 
-    @Column(name = "GENDER", length = 1)
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+    // Mypage.jsx 에서 성별, 전화번호, 주소, 나이 필드가 없으므로 우선 주석처리 또는 선택적 추가
+    // @Column(name = "GENDER", length = 1)
+    // @Enumerated(EnumType.STRING)
+    // private Gender gender;
 
-    @Column(length = 13)
-    private String phone;
+    // @Column(name = "PHONE", length = 20)
+    // private String phone;
 
-    @Column(length = 100)
-    private String address;
+    // @Column(name = "ADDRESS", length = 255)
+    // private String address;
 
-    @Column(name = "ENROLL_DATE")
+    // @Column(name = "AGE")
+    // private Integer age;
+
+    @Column(name = "ENROLL_DATE", updatable = false)
     private LocalDateTime enrollDate;
 
     @Column(name = "MODIFY_DATE")
     private LocalDateTime modifyDate;
 
-    @Column(length = 1, nullable = false)
+    @Column(name = "STATUS", length = 1, nullable = false)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Status status;
 
-    private Integer age;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Board> boards = new ArrayList<>();
 
-    //1 : N 연관관계 주인 = Board
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    List<Board> boards = new ArrayList<>();
-
-    //1 : N 연관관계 주인 = Notice
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    List<Notice> notices = new ArrayList<>();
-
-    //회원 : 프로필 (1 : 1)
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "PROFILE_ID", unique = true)
-    private Profile profile;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Reply> replies = new ArrayList<>();
 
 
-    public enum Gender {
-        M, F
+    // public enum Gender { M, F } // 필요시 사용
+
+    // Mypage.jsx 에서는 주로 비밀번호 변경이 핵심
+    public void updateUserInfo(String userName /*, String phone, String address, Integer age, Gender gender*/) {
+        if (userName != null && !userName.isEmpty()) { // Mypage.jsx에서는 이름 변경 UI 없음
+            this.userName = userName;
+        }
+        // 나머지 필드 업데이트 로직 (필요시)
     }
 
-    public void updateMemberInfo(String username, String email, Gender gender, String phone, String address, Integer age) {
-        this.userName = userName;
-        this.email = email;
-        this.gender = gender;
-        this.phone = phone;
-        this.address = address;
-        this.age = age;
-
+    public void changePassword(String newPassword) {
+        this.userPwd = newPassword;
     }
 
     @PrePersist
-    public void prePersist() {
+    protected void onCreate() {
         this.enrollDate = LocalDateTime.now();
         this.modifyDate = LocalDateTime.now();
-        if(this.status == null) {
+        if (this.status == null) {
             this.status = CommonEnums.Status.Y;
         }
     }
 
     @PreUpdate
-    public void preUpdate() {
+    protected void onUpdate() {
         this.modifyDate = LocalDateTime.now();
     }
 }

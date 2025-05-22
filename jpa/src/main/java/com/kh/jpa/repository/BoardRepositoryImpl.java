@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RestController;
 
 @Repository
-public class BoardRepositoryImpl implements BoardRespository {
+public class BoardRepositoryImpl implements BoardRepository {
 
     @PersistenceContext
     private EntityManager em;
@@ -49,6 +49,11 @@ public class BoardRepositoryImpl implements BoardRespository {
     public Long save(Board board) {
         em.persist(board);
         return board.getBoardNo();
+    }
+
+    @Override
+    public void delete(Board board) {
+        em.remove(board);
     }
 
 
