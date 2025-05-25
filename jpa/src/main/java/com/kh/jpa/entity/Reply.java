@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import lombok.*;
 
 @Entity
-@Table(name = "REPLY") // 테이블명 명시
+@Table(name = "REPLY")
 @Getter
-@Setter // 내용 수정 등을 위해 Setter 추가 또는 변경 메소드 구현
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -18,7 +18,7 @@ public class Reply {
     @Column(name = "REPLY_NO")
     private Long replyNo;
 
-    @Column(name = "REPLY_CONTENT", length = 1000, nullable = false) // 댓글 길이 고려
+    @Column(name = "REPLY_CONTENT", length = 1000, nullable = false)
     private String replyContent;
 
     @Column(name = "CREATE_DATE", nullable = false, updatable = false)
@@ -29,7 +29,7 @@ public class Reply {
     private CommonEnums.Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BOARD_NO") // FK 컬럼명 BOARD_NO로 통일 (Board 엔티티의 PK 컬럼명 참조)
+    @JoinColumn(name = "BOARD_NO")
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)

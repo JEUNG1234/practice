@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
+@Setter // 양방향 연관관계 편의 메서드 등을 위해 Setter 허용
 @Entity
 @Table(name = "MEMBER")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +23,7 @@ public class Member {
 
     @Id
     @Column(name = "USER_ID", length = 254)
-    private String userId; // email 형식 ID
+    private String userId;
 
     @Column(name = "USER_PWD", length = 100, nullable = false)
     private String userPwd;
@@ -31,22 +31,8 @@ public class Member {
     @Column(name = "USER_NAME", length = 50, nullable = false)
     private String userName;
 
-    @Column(name = "EMAIL", length = 254, unique = true) // 실제 이메일 (userId와 같을 수 있음)
+    @Column(name = "EMAIL", length = 254, unique = true)
     private String email;
-
-    // Mypage.jsx 에서 성별, 전화번호, 주소, 나이 필드가 없으므로 우선 주석처리 또는 선택적 추가
-    // @Column(name = "GENDER", length = 1)
-    // @Enumerated(EnumType.STRING)
-    // private Gender gender;
-
-    // @Column(name = "PHONE", length = 20)
-    // private String phone;
-
-    // @Column(name = "ADDRESS", length = 255)
-    // private String address;
-
-    // @Column(name = "AGE")
-    // private Integer age;
 
     @Column(name = "ENROLL_DATE", updatable = false)
     private LocalDateTime enrollDate;
@@ -66,15 +52,26 @@ public class Member {
     @Builder.Default
     private List<Reply> replies = new ArrayList<>();
 
+    // Profile과의 일대일 양방향 연관관계 추가
+    // Member가 Profile의 주인이 됩니다. Profile 저장 시 Member에 Profile을 설정하고 저장하면 됩니다.
+    // 또는 Profile이 저장될 때 Member의 profile 필드도 함께 업데이트 되도록 cascade 설정.
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROFILE_ID") // Member 테이블에 PROFILE_ID 외래 키 생성
+    private Profile profile; // Profile 엔티티의 mappedBy 값과 일치해야 함
 
-    // public enum Gender { M, F } // 필요시 사용
+    // 연관관계 편의 메서드 (양방향 설정 시)
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+        if (profile != null && profile.getMember() != this) {
+            profile.setMember(this); // Profile 엔티티에도 Member 설정 (양방향일 경우)
+        }
+    }
 
-    // Mypage.jsx 에서는 주로 비밀번호 변경이 핵심
-    public void updateUserInfo(String userName /*, String phone, String address, Integer age, Gender gender*/) {
-        if (userName != null && !userName.isEmpty()) { // Mypage.jsx에서는 이름 변경 UI 없음
+
+    public void updateUserInfo(String userName) {
+        if (userName != null && !userName.isEmpty()) {
             this.userName = userName;
         }
-        // 나머지 필드 업데이트 로직 (필요시)
     }
 
     public void changePassword(String newPassword) {

@@ -13,10 +13,13 @@ public class MemberDto {
         private String email;    // userId
         private String password;
 
-        public Member toEntity(String encryptedPassword) {
+        // PasswordEncoder를 사용하지 않으므로, 파라미터로 평문 비밀번호를 받거나 DTO의 password 필드를 직접 사용합니다.
+        // 여기서는 MemberServiceImpl에서 createDto.getPassword()를 직접 전달하는 것을 가정하고,
+        // toEntity 메소드 내부에서 this.password를 사용하도록 변경합니다.
+        public Member toEntity() { // 파라미터 제거
             return Member.builder()
                     .userId(this.email)
-                    .userPwd(encryptedPassword)
+                    .userPwd(this.password) // DTO의 password 필드를 직접 사용 (평문)
                     .userName(this.name)
                     .email(this.email) // Member 엔티티의 email 필드에도 저장
                     .status(CommonEnums.Status.Y) // 기본 활성 상태
@@ -56,7 +59,7 @@ public class MemberDto {
     public static class Update { // Mypage.jsx
         private String currentPassword;
         private String newPassword;
-        // private String userName; // 이름 변경 필요시
+        // private String userName; // 이름 변경 필요시 (현재 프론트엔드 Mypage.jsx 에서는 이름 변경 UI 없음)
         // private String phone;
         // private String address;
         // private Integer age;
