@@ -84,7 +84,6 @@ public class BoardServiceImpl implements BoardService {
         }
 
         board.updateBoard(boardUpdateDto.getTitle(), boardUpdateDto.getBody());
-        // The transaction will automatically commit changes to the board entity.
         return BoardDto.Response.fromEntity(board);
     }
 }
